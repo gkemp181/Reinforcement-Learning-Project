@@ -1,0 +1,31 @@
+{
+  "os": "Windows-10-10.0.26100-SP0",
+  "python": "CPython 3.11.0",
+  "startedAt": "2025-04-21T18:43:56.328002Z",
+  "program": "C:\\Users\\defre\\OneDrive\\Desktop\\ELE392Project\\Reinforcement-Learning-Project\\testing.py",
+  "codePath": "testing.py",
+  "git": {
+    "remote": "https://github.com/gkemp181/Reinforcement-Learning-Project.git",
+    "commit": "01373aebbec563629434a819aaf276e6fc0160af"
+  },
+  "email": "jarrett.defreitas@uri.edu",
+  "root": "C:\\Users\\defre\\OneDrive\\Desktop\\ELE392Project\\Reinforcement-Learning-Project",
+  "host": "LAPTOP-C4C54TQD",
+  "executable": "C:\\Users\\defre\\OneDrive\\Desktop\\ELE392Project\\Reinforcement-Learning-Project\\venv\\Scripts\\python.exe",
+  "codePathLocal": "testing.py",
+  "cpu_count": 4,
+  "cpu_count_logical": 8,
+  "disk": {
+    "/": {
+      "total": "998997917696",
+      "used": "497859969024"
+    }
+  },
+  "memory": {
+    "total": "8356937728"
+  },
+  "cpu": {
+    "count": 4,
+    "countLogical": 8
+  }
+}

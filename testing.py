@@ -26,6 +26,11 @@ import gymnasium as gym
 import gymnasium_robotics
 from stable_baselines3 import PPO
 
+import wandb
+run = wandb.init(project="pickup-and-place")
+run.name = "xarm7ELE392"
+run.save()
+
 gym.register_envs(gymnasium_robotics)
 
 env = gym.make("FetchPickAndPlace-v3", render_mode="human")

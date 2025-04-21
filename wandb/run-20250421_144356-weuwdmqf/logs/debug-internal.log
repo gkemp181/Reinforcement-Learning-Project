@@ -1,0 +1,15 @@
+{"time":"2025-04-21T14:43:56.3391798-04:00","level":"INFO","msg":"stream: starting","core version":"0.19.9","symlink path":"C:\\Users\\defre\\OneDrive\\Desktop\\ELE392Project\\Reinforcement-Learning-Project\\wandb\\run-20250421_144356-weuwdmqf\\logs\\debug-core.log"}
+{"time":"2025-04-21T14:43:58.4246275-04:00","level":"INFO","msg":"created new stream","id":"weuwdmqf"}
+{"time":"2025-04-21T14:43:58.4246275-04:00","level":"INFO","msg":"stream: started","id":"weuwdmqf"}
+{"time":"2025-04-21T14:43:58.4246275-04:00","level":"INFO","msg":"handler: started","stream_id":"weuwdmqf"}
+{"time":"2025-04-21T14:43:58.4246275-04:00","level":"INFO","msg":"sender: started","stream_id":"weuwdmqf"}
+{"time":"2025-04-21T14:43:58.4251778-04:00","level":"INFO","msg":"writer: Do: started","stream_id":"weuwdmqf"}
+{"time":"2025-04-21T14:43:58.6079798-04:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-04-21T14:55:07.2848844-04:00","level":"INFO","msg":"stream: closing","id":"weuwdmqf"}
+{"time":"2025-04-21T14:55:07.2848844-04:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-04-21T14:55:07.2848844-04:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-04-21T14:55:08.064465-04:00","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2025-04-21T14:55:08.4763196-04:00","level":"INFO","msg":"handler: closed","stream_id":"weuwdmqf"}
+{"time":"2025-04-21T14:55:08.4763196-04:00","level":"INFO","msg":"sender: closed","stream_id":"weuwdmqf"}
+{"time":"2025-04-21T14:55:08.4763196-04:00","level":"INFO","msg":"writer: Close: closed","stream_id":"weuwdmqf"}
+{"time":"2025-04-21T14:55:08.4768231-04:00","level":"INFO","msg":"stream: closed","id":"weuwdmqf"}
