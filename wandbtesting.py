@@ -1,18 +1,14 @@
 import gymnasium as gym
 import gymnasium_robotics
 from stable_baselines3 import PPO
-from sb3_contrib.common.wandb_callback import WandbCallback
-
 import wandb
+from wandb.integration.sb3 import WandbCallback
+from create_env import create_env
 
 # Initialize WandB project
 run = wandb.init(project="pickup-and-place", name="xarm7ELE392")
 
-# Register environments
-gym.register_envs(gymnasium_robotics)
-
-# Create the environment
-env = gym.make("FetchPickAndPlace-v3", render_mode="human")
+env = create_env(render_mode="human")
 obs, info = env.reset(seed=42)
 
 # Initialize the model
