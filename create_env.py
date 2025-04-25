@@ -60,7 +60,7 @@ def create_env(render_mode=None):
     gym.register_envs(gymnasium_robotics)
 
     # create and wrap your env
-    base_env = gym.make("FetchPickAndPlace-v3", render_mode=render_mode)
+    base_env = gym.make("FetchPickAndPlaceDense-v3", render_mode=render_mode)
     env      = RandomizedFetchWrapper(base_env)
 
     return env
