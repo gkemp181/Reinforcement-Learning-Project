@@ -1,45 +1,26 @@
-import torch
-import numpy as np
 import gymnasium as gym
-import gymnasium_robotics
-from your_wrapper_module import RandomizedFetchWrapper, create_env  # Adjust the import as needed
+import time
+import numpy as np
+from stable_baselines3 import SAC  # or another algorithm like SAC or TD3
 
-# Make environment with rendering
-env = create_env(render_mode="human")
-obs, info = env.reset()
+# Load the MuJoCo "Pick and Place" environment
+env = gym.make("FetchPickAndPlace-v2", render_mode="human")  # "human" for real-time rendering
 
-# Get obs/action dimensions from the environment
-obs_dim = obs["observation"].shape[0]
-act_dim = env.action_space.shape[0]
+# Load the pretrained model
+# Replace 'path_to_model.zip' with the actual path to your trained agent
+model = SAC.load("C:\Users\defre\OneDrive\Desktop\ELE392Project\Reinforcement-Learning-Project\models\recording_test1.zip")
 
-# Define your model architecture (must match the saved model)
-class PickPlacePolicy(torch.nn.Module):
-    def __init__(self, obs_dim, act_dim):
-        super().__init__()
-        self.net = torch.nn.Sequential(
-            torch.nn.Linear(obs_dim, 256),
-            torch.nn.ReLU(),
-            torch.nn.Linear(256, act_dim),
-            torch.nn.Tanh()  # Because action range is usually [-1, 1]
-        )
+obs, _ = env.reset()
 
-    def forward(self, x):
-        return self.net(x)
-
-# Load pretrained model
-model = PickPlacePolicy(obs_dim, act_dim)
-model.load_state_dict(torch.load("pickplace_model.pth"))  # Adjust path
-model.eval()
-
-# Run 1 episode
-done = False
-while not done:
-    obs_tensor = torch.tensor(obs["observation"], dtype=torch.float32)
-    with torch.no_grad():
-        action = model(obs_tensor).numpy()
-
+# Run the model in the environment
+for _ in range(1000):
+    action, _ = model.predict(obs, deterministic=True)
     obs, reward, terminated, truncated, info = env.step(action)
-    done = terminated or truncated
+    
+    if terminated or truncated:
+        obs, _ = env.reset()
+
+    time.sleep(0.01)  # Slow down rendering to be watchable
 
 env.close()
 
