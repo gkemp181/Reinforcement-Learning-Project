@@ -8,50 +8,53 @@ class RandomizedFetchWrapper(gym.Wrapper):
         self.u = env.unwrapped  # MujocoFetchPickAndPlaceEnv
 
     def reset(self, **kwargs):
-        # 1) do the normal reset
+        # 1) do the normal reset — this gives you obs with a random goal
         obs, info = super().reset(**kwargs)
-
-        u     = self.unwrapped        
+        u     = self.unwrapped
         model = u.model
         data  = u.data
-        utils = u._utils
-        rng   = u.np_random            # same RNG that the env uses
+        utils  = u._utils
+        rng    = u.np_random
 
-        # 2) restore robot slides to home
+        # 2) fix the robot slides to home
         for name, val in zip(
-            ["robot0:slide0", "robot0:slide1", "robot0:slide2"],
-            [0.405,      0.48,       0.0],
+            ["robot0:slide0","robot0:slide1","robot0:slide2"],
+            [0.405,       0.48,        0.0],
         ):
             utils.set_joint_qpos(model, data, name, val)
 
-        # 3) sample block (x,y) *around the XML’s initial gripper*…
-        home_xy    = u.initial_gripper_xpos[:2]  # [1.3419, 0.7491]
-        obj_range  = u.obj_range                # 0.15 m
-        min_dist   = u.distance_threshold       # 0.10 m
+        # pull out the actual goal so we can avoid it
+        goal_pos = obs["desired_goal"][:2].copy()
 
-        # draw until > min_dist
-        offset = rng.uniform(-obj_range, obj_range, size=2)
-        while np.linalg.norm(offset) < min_dist:
+        # 3) now sample a block (x,y) that is:
+        #    a) at least min_dist from the gripper home
+        #    b) at least min_dist from the goal
+        home_xy  = u.initial_gripper_xpos[:2]
+        obj_range = u.obj_range
+        min_dist  = u.distance_threshold
+
+        while True:
             offset = rng.uniform(-obj_range, obj_range, size=2)
+            # 3a) must be outside the “too-close to gripper” zone
+            if np.linalg.norm(offset) < min_dist:
+                continue
+            candidate_xy = home_xy + offset
+            # 3b) must be outside the “too-close to goal” zone
+            if np.linalg.norm(candidate_xy - goal_pos) < min_dist:
+                continue
+            # if we get here, both checks passed
+            break
 
-        # 4) write block joint:
+        # 4) actually place the block
         blk_qpos = utils.get_joint_qpos(model, data, "object0:joint")
-        blk_qpos[0:2] = home_xy + offset
-        blk_qpos[2]    = 0.42     # fixed table-top height :contentReference[oaicite:0]{index=0}
+        blk_qpos[0:2] = candidate_xy
+        blk_qpos[2]    = 0.42  # table height
         utils.set_joint_qpos(model, data, "object0:joint", blk_qpos)
 
-        # 5) forward kinematics
+        # 5) forward-kinematics + fresh obs
         u._mujoco.mj_forward(model, data)
-
-        # refresh obs so we have up‑to‑date positions
         obs = u._get_obs()
-        block_pos = obs["observation"][:3]
-        goal_pos  = obs["desired_goal"]
-        # if overlap, try again
-        
-        if np.linalg.norm(block_pos - goal_pos) < 10*u.distance_threshold:
-            return self.reset(**kwargs)
-        
+
         return obs, info
 
 
