@@ -1,3 +1,4 @@
+import os
 import gymnasium as gym
 from gymnasium.wrappers import RecordEpisodeStatistics, RecordVideo
 import gymnasium_robotics
@@ -9,11 +10,13 @@ from wandb.integration.sb3 import WandbCallback
 from create_env import create_env
 
 
-run_name = "recording_test1"
+run_name = "recording_test2"
 
 
 training_period = 250  # record the agent's episode every 250
 num_training_episodes = 10_000  # total number of training episodes
+load_model = True  # whether to load a pre-trained model or not
+checkpoint_path = f"./models/{run_name}/model.zip"
 
 with wandb.init(name=run_name, project="pickup-and-place") as run:
 
@@ -23,10 +26,14 @@ with wandb.init(name=run_name, project="pickup-and-place") as run:
     env = RecordEpisodeStatistics(env)
 
     # 3. Build your SAC model (still logs to TB dir)
-    model = SAC(
-        "MultiInputPolicy",
-        env,
-        verbose=1,
+    if load_model and os.path.exists(checkpoint_path):
+        print(f"Loading model from {checkpoint_path}")
+        model = SAC.load(checkpoint_path, env=env, verbose=1)
+    else:
+        model = SAC(
+            "MultiInputPolicy",
+            env,
+            verbose=1,
     )
 
     # 4. Train with periodic model checkpoints
