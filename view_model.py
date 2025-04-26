@@ -10,7 +10,7 @@ from create_env import create_env
 env = create_env(render_mode="human")
 
 # Path to model file
-checkpoint_path = os.path.join("models", "recording_test2", "model.zip")
+checkpoint_path = os.path.join("models", "recording_test3", "model.zip")
 
 # Load model
 model = SAC.load(checkpoint_path, env=env, verbose=1)
@@ -22,3 +22,5 @@ for _ in range(2000):
     obs, reward, done, trunc, info = env.step(action)
     if done or trunc:
         obs, info = env.reset()
+
+env.close()
