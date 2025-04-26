@@ -3,3 +3,6 @@ __pycache__
 *.pyc
 wandb
 tensorboard
+models
+sac_recording_test
+recordings
