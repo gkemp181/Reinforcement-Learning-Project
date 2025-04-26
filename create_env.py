@@ -58,12 +58,17 @@ class RandomizedFetchWrapper(gym.Wrapper):
         return obs, info
 
 
-def create_env(render_mode=None):
+def create_env(render_mode=None, sparse=False):
 
     gym.register_envs(gymnasium_robotics)
 
+    if(sparse):
+        environment = "FetchPickAndPlace-v3"
+    else:
+        environment = "FetchPickAndPlaceDense-v3"
+
     # create and wrap your env
-    base_env = gym.make("FetchPickAndPlaceDense-v3", render_mode=render_mode)
+    base_env = gym.make(environment, render_mode=render_mode)
     env      = RandomizedFetchWrapper(base_env)
 
     return env
