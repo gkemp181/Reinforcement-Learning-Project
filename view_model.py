@@ -24,6 +24,9 @@ for _ in range(2000):
     if done or trunc:
         obs, info = env.reset()
 
+<<<<<<< HEAD
     # time.sleep(0.01)
 
+=======
+>>>>>>> 871505d3b198190d3573e3b122b4ace953b82fd4
 env.close()
