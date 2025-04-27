@@ -12,7 +12,7 @@ def run_model_episode():
     env = create_env(render_mode="rgb_array")
 
     # 2. Load your trained model
-    checkpoint_path = os.path.join("models", "test", "model.zip")
+    checkpoint_path = os.path.join("models", "sac_pickup_and_place_test1", "model.zip")
     model = SAC.load(checkpoint_path, env=env, verbose=1)
 
     # 3. Rollout the episode
