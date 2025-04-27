@@ -4,12 +4,19 @@ import numpy as np
 import torch
 import imageio
 from stable_baselines3 import SAC
-from create_env import create_env
+from custom_env import create_env
 
 # Define the function that runs the model and outputs a video
 def run_model_episode():
     # 1. Create environment with render_mode="rgb_array" (needed to capture frames)
-    env = create_env(render_mode="rgb_array")
+    # e.g. user inputs:
+    # Relative to center of table
+    x_start, y_start = 0.0, 0.0
+    x_targ, y_targ, z_targ = 0.1, 0.1, 0.1
+
+    env = create_env(render_mode="rgb_array",
+                    block_xy=(x_start, y_start),
+                    goal_xyz=(x_targ, y_targ, z_targ))
 
     # 2. Load your trained model
     checkpoint_path = os.path.join("model", "model.zip")
