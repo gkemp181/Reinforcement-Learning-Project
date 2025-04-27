@@ -31,6 +31,9 @@ def run_model_episode():
 
     env.close()
 
+    # TODO This will probably need to save into a unique directory 
+    # so it doesnt override when multiple people are running the app
+
     # 4. Save the frames into a video
     video_path = "run_video.mp4"
     imageio.mimsave(video_path, frames, fps=30)
