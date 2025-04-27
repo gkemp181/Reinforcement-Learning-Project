@@ -10,13 +10,13 @@ from stable_baselines3.her.goal_selection_strategy import GoalSelectionStrategy
 from stable_baselines3.common.envs import BitFlippingEnv
 import wandb
 from wandb.integration.sb3 import WandbCallback
-from create_env import create_env
+from lift_env import create_env
 
 # Path to model file
-checkpoint_path = os.path.join("models", "recording_test2", "model.zip")
+checkpoint_path = os.path.join("models", "test", "model.zip")
 
 # Variables
-run_name = "HER_test1"
+run_name = "lift_HER_test2"
 record_frequency = 250  # record the agent's episode every 250
 save_frequency = 250  # save the model every 100 episodes
 show_progress_bar = True  # show progress bar during training
@@ -39,7 +39,7 @@ run = wandb.init(
 )
 
 # Initialize Environment With Recording and WandB Logging
-env = create_env(render_mode="rgb_array", sparse=True)
+env = create_env(render_mode="rgb_array")
 env = RecordVideo(env, video_folder=f"recordings/{run.name}/{run.id}", name_prefix="training",
                   video_length=200,
                 episode_trigger=lambda x: x % run.config.video_freq_steps == 0)
@@ -50,17 +50,18 @@ env = VecMonitor(
     info_keywords=("is_success",),
 )
 
-goal_selection_strategy = "future"
-
 # Initialize Model
 model = SAC.load(
-    checkpoint_path, 
+    checkpoint_path,
     env=env, 
     replay_buffer_class=HerReplayBuffer,
     replay_buffer_kwargs=dict(
         n_sampled_goal=4,
-        goal_selection_strategy=goal_selection_strategy,
+        goal_selection_strategy=GoalSelectionStrategy.FUTURE,
     ),
+    buffer_size=int(1e6),
+    batch_size=256,
+    ent_coef='auto',
     verbose=1,
     tensorboard_log=f"tensorboard/{run.name}/{run.id}",
 )
