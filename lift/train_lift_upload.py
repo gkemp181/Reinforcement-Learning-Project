@@ -16,7 +16,7 @@ from lift_env import create_env
 checkpoint_path = os.path.join("models", "test", "model.zip")
 
 # Variables
-run_name = "lift_HER_test2"
+run_name = "lift_HER_4/27"
 record_frequency = 250  # record the agent's episode every 250
 save_frequency = 250  # save the model every 100 episodes
 show_progress_bar = True  # show progress bar during training
