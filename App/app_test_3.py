@@ -53,7 +53,7 @@ def run_model_episode():
 # --------------------------------------
 
 with gr.Blocks() as demo:
-    gr.Markdown("# 🤖 Fetch Robot: Model Demo App")
+    gr.Markdown("Fetch Robot: Model Demo App")
     gr.Markdown("Click 'Run Model' to watch the SAC agent interact with the FetchPickAndPlace environment.")
 
     run_button = gr.Button("Run Model")
