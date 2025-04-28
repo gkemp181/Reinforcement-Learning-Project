@@ -42,7 +42,7 @@ def run_model_episode():
     # so it doesnt override when multiple people are running the app
 
     # 4. Save the frames into a video
-    video_path = "run_video.mp4"
+    video_path = "run_video_2.mp4"
     imageio.mimsave(video_path, frames, fps=30)
 
     # 5. Return path to Gradio to display
