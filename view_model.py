@@ -11,7 +11,7 @@ from create_env import create_env
 env = create_env(render_mode="human", sparse=False)
 
 # Path to model file
-checkpoint_path = os.path.join("models", "RL_Model_v1", "model.zip")
+checkpoint_path = os.path.join("models", "Train_HER_4_28", "model.zip")
 
 # Load model
 model = SAC.load(checkpoint_path, env=env, verbose=1)
