@@ -1,3 +1,8 @@
+# <-- this must come first, before any mujoco / gym imports
+import os
+os.environ["MUJOCO_GL"] = "osmesa"
+
+
 import gradio as gr
 import wandb
 import requests

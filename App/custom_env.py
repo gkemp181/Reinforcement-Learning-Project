@@ -1,10 +1,14 @@
+# <-- this must come first, before any mujoco / gym imports
+# import os
+# os.environ["MUJOCO_GL"] = "osmesa"
+
 import numpy as np
 import gymnasium as gym
 import gymnasium_robotics
 import mujoco
 
 class CustomFetchWrapper(gym.Wrapper):
-    def __init__(self, env, block_xy=None, goal_xyz=None):
+    def __init__(self, env, block_xy=None, goal_xyz=None, object=True):
         super().__init__(env)
         self.u = env.unwrapped  # MujocoFetchPickAndPlaceEnv
         # stash your fixed coords (or None to randomize)
@@ -12,6 +16,7 @@ class CustomFetchWrapper(gym.Wrapper):
                                  if block_xy is not None else None)
         self.default_goal_xyz = (np.array(goal_xyz, dtype=float)
                                  if goal_xyz is not None else None)
+        self.object = object
 
     def reset(self, *args, **kwargs):
         # 1) do the normal reset — gets you a random goal in obs
@@ -29,45 +34,49 @@ class CustomFetchWrapper(gym.Wrapper):
         ):
             utils.set_joint_qpos(model, data, name, val)
 
-        # 3) pick block position
-        if self.default_block_xy is None:
-            # — original random‐sampling —
-            home_xy   = u.initial_gripper_xpos[:2]
-            obj_range = u.obj_range
-            min_dist  = u.distance_threshold
-            while True:
-                offset = rng.uniform(-obj_range, obj_range, size=2)
-                if np.linalg.norm(offset) < min_dist:
-                    continue
-                cand = home_xy + offset
-                if np.linalg.norm(cand - obs["desired_goal"][:2]) < min_dist:
-                    continue
-                break
-            block_xy = cand
-        else:
-            block_xy = self.default_block_xy
+        # pull out the actual goal so we can avoid it
+        goal_pos = obs["desired_goal"][:2].copy()
 
-        # place the block
-        blk_qpos = utils.get_joint_qpos(model, data, "object0:joint")
-        blk_qpos[0:2] = block_xy
-        blk_qpos[2]    = 0.42  # table height
-        utils.set_joint_qpos(model, data, "object0:joint", blk_qpos)
+        if (self.object==True):
+            # 3) pick block position
+            if self.default_block_xy is None:
+                home_xy  = u.initial_gripper_xpos[:2]
+                obj_range = u.obj_range
+                min_dist  = u.distance_threshold
+
+                while True:
+                    offset = rng.uniform(-obj_range, obj_range, size=2)
+                    # 3a) must be outside the “too-close to gripper” zone
+                    if np.linalg.norm(offset) < min_dist:
+                        continue
+                    candidate_xy = home_xy + offset
+                    # 3b) must be outside the “too-close to goal” zone
+                    if np.linalg.norm(candidate_xy - goal_pos) < min_dist:
+                        continue
+                    # if we get here, both checks passed
+                    break
+
+                block_xy = candidate_xy
+                
+            else:
+                block_xy = self.default_block_xy
+
+            # place the block
+            blk_qpos = utils.get_joint_qpos(model, data, "object0:joint")
+            blk_qpos[0:2] = block_xy
+            blk_qpos[2]    = 0.42  # table height
+            utils.set_joint_qpos(model, data, "object0:joint", blk_qpos)
 
         # 4) pick goal position
-        if self.default_goal_xyz is None:
-            # — original “raise above table” logic —
-            raise_z = 0.1 + rng.uniform(0, 0.2)
-            new_goal = obs["desired_goal"].copy()
-            new_goal[2] = blk_qpos[2] + raise_z
-        else:
+        if self.default_goal_xyz is not None:
             new_goal = self.default_goal_xyz
 
-        # override the goal both in the env and in the MuJoCo site
-        u.goal = new_goal
-        sid = mujoco.mj_name2id(model,
-                                mujoco.mjtObj.mjOBJ_SITE,
-                                "target0")
-        data.site_xpos[sid] = new_goal
+            # override the goal both in the env and in the MuJoCo site
+            u.goal = new_goal
+            sid = mujoco.mj_name2id(model,
+                                    mujoco.mjtObj.mjOBJ_SITE,
+                                    "target0")
+            data.site_xpos[sid] = new_goal
 
         # 5) forward‐kinematics + fresh obs
         u._mujoco.mj_forward(model, data)
@@ -76,9 +85,15 @@ class CustomFetchWrapper(gym.Wrapper):
         return obs, info
 
 
-def create_env(render_mode=None, block_xy=None, goal_xyz=None):
+def create_env(render_mode=None, block_xy=None, goal_xyz=None, environment = "FetchPickAndPlace-v3"):
     gym.register_envs(gymnasium_robotics)
-    base_env = gym.make("FetchPickAndPlace-v3", render_mode=render_mode)
+
+    if(environment == "FetchReach-v3"):
+        object = False
+    else:
+        object = True
+
+    base_env = gym.make(environment, render_mode=render_mode)
     u = base_env.unwrapped
 
     # 1) compute table center in world coords
@@ -106,6 +121,7 @@ def create_env(render_mode=None, block_xy=None, goal_xyz=None):
     env = CustomFetchWrapper(
         base_env,
         block_xy=abs_block_xy,
-        goal_xyz=abs_goal_xyz
+        goal_xyz=abs_goal_xyz,
+        object=object
     )
     return env
