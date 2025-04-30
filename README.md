@@ -29,9 +29,9 @@
 
 This repository was created to manage the development of our group’s reinforcement learning project for **ELE392** at the University of Rhode Island, taught by Dr. Chiovaro. We implement and train Soft Actor-Critic (SAC) models on Gymnasium’s Robotics Fetch environments, achieving successful training on:
 
-- **PickAndPlace-v3**  
-- **Reach-v3**  
-- **Push-v3**  
+- **FetchPickAndPlace-v3**  
+- **FetchReach-v3**  
+- **FetchPush-v3**  
 
 The Fetch environments are based on the 7-DoF Fetch Mobile Manipulator arm, with a two-fingered parallel gripper attached to it.
 
